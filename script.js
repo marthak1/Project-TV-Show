@@ -7,8 +7,9 @@ function setup() {
   renderEpisodes(oneEpisode);
 }
 
-//Responsibility => Should render formatted Data to the DOM
+//Display Episodes => Responsibility => Should render formatted Data to the DOM
 function renderEpisodes(episodeList) {
+  //Select and create HTML elements
   const rootElem = document.getElementById("root");
   const sectionEl = document.createElement("section");
   const innerDivEl = document.createElement("div");
@@ -17,21 +18,22 @@ function renderEpisodes(episodeList) {
   const pElemRuntime = document.createElement("p");
   const pElemSummary = document.createElement("p");
 
+  //Append child element to parent element
   rootElem.appendChild(sectionEl);
   sectionEl.appendChild(innerDivEl);
   innerDivEl.appendChild(h1El);
-  innerDivEl.appendChild(imageEl);
+  innerDivEl.appendChild(imageEl)
   innerDivEl.appendChild(pElemRuntime);
   innerDivEl.appendChild(pElemSummary);
 
+  //Modify content for display
   h1El.textContent = episodeList.name;
   imageEl.src = episodeList.image.medium;
   pElemRuntime.textContent = episodeList.runtime;
   pElemSummary.textContent = episodeList.summary;
 }
 
-// Responsibilities => Should transform data into UI-friendly data
-
+//Formatters => Responsibilities => Should transform data into UI-friendly data
 //transforms season + number properties into format as S01E01
 function formatEpisodeCode() {}
 
@@ -40,5 +42,8 @@ function formatRuntime() {}
 
 //removes the p tag from summary text
 function cleanSummary() {}
+
+//Prepared Episode Data => Combine formatted property and every other property the UI needs
+const preparedEpisode = {}
 
 window.onload = setup;
