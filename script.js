@@ -28,10 +28,7 @@ function renderEpisodes(episodeList) {
   pElemSummary.textContent = episodeList.summary;
 }
 
-// Responsibility => Should transform data into UI-friendly data
-function formatEpisodeCode(){};
-function formatRuntime(){};
-function cleanSummary(){};
+
 
 window.onload = setup;
 
