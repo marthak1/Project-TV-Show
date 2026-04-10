@@ -1,10 +1,11 @@
-//You can edit ALL of the code here
+//Responsibility => Should orchestrate All layers
 function setup() {
   const allEpisodes = getAllEpisodes();
   const oneEpisode = getOneEpisode()
   renderEpisodes(oneEpisode);
 }
 
+//Responsibility => Should render formatted Data to the DOM
 function renderEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
   const sectionEl = document.createElement("section");
@@ -26,6 +27,11 @@ function renderEpisodes(episodeList) {
   pElemRuntime.textContent = episodeList.runtime;
   pElemSummary.textContent = episodeList.summary;
 }
+
+// Responsibility => Should transform data into UI-friendly data
+function formatEpisodeCode(){};
+function formatRuntime(){};
+function cleanSummary(){};
 
 window.onload = setup;
 
