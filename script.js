@@ -7,10 +7,13 @@ function setup() {
   //Prepared Episode Data => Combine formatted property and every other property the UI needs
   const { season, number } = oneEpisode;
   const code = formatEpisodeCode(season, number);
+  const {runtime } = oneEpisode;
+  const runTime = formatRuntime(runtime);
 
   const preparedEpisodeData = {
     name: oneEpisode.name,
     code,
+    runTime,
     image: oneEpisode.image,
   };
   // renderEpisodes(oneEpisode);
@@ -42,7 +45,7 @@ function renderEpisodes(episodeList) {
   //Manipulate content for display
   pElemCode.textContent = episodeList.code;
   imageEl.src = episodeList.image.medium;
-  pElemRuntime.textContent = episodeList.runtime;
+  pElemRuntime.textContent = episodeList.runTime;
   pElemSummary.textContent = episodeList.summary;
 }
 
@@ -53,9 +56,11 @@ function formatEpisodeCode(seasonCode, numberCode) {
 }
 
 //transforms runtime property into format as 01:00:00
-function formatRuntime() {}
-
+function formatRuntime(time) {
+  const hour = Math.floor(time / 60);
+  const remainingMinute = time % 60;
+  return `${String(hour).padStart(2,"0")}:${String(remainingMinute).padStart(2, "0")}`;
+}
 //removes the p tag from summary text
 function cleanSummary() {}
-
 window.onload = setup;
