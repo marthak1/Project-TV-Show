@@ -9,11 +9,14 @@ function setup() {
   const code = formatEpisodeCode(season, number);
   const {runtime } = oneEpisode;
   const runTime = formatRuntime(runtime);
+  const {summary} = oneEpisode;
+  const summaryTag = cleanSummary(summary)
 
   const preparedEpisodeData = {
     name: oneEpisode.name,
     code,
     runTime,
+    summaryTag,
     image: oneEpisode.image,
   };
   // renderEpisodes(oneEpisode);
@@ -46,7 +49,7 @@ function renderEpisodes(episodeList) {
   pElemCode.textContent = episodeList.code;
   imageEl.src = episodeList.image.medium;
   pElemRuntime.textContent = episodeList.runTime;
-  pElemSummary.textContent = episodeList.summary;
+  pElemSummary.textContent = episodeList.summaryTag;
 }
 
 //Formatters => Responsibilities => Should transform data into UI-friendly data
@@ -59,8 +62,10 @@ function formatEpisodeCode(seasonCode, numberCode) {
 function formatRuntime(time) {
   const hour = Math.floor(time / 60);
   const remainingMinute = time % 60;
-  return `${String(hour).padStart(2,"0")}:${String(remainingMinute).padStart(2, "0")}`;
+  return `Airtime: ${String(hour).padStart(2,"0")}:${String(remainingMinute).padStart(2, "0")}`;
 }
 //removes the p tag from summary text
-function cleanSummary() {}
+function cleanSummary(sumParagraph) {
+  return `${String(sumParagraph).slice(3, -4)}`
+}
 window.onload = setup;
