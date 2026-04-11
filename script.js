@@ -1,25 +1,25 @@
 //Responsibility => Should orchestrate All layers
 function setup() {
   //Fetch raw episode data
-  const oneEpisode = getOneEpisode();
   const allEpisodes = getAllEpisodes();
 
-  //Prepared Episode Data => Combine formatted property and every other property the UI needs
-  const { season, number } = oneEpisode;
-  const code = formatEpisodeCode(season, number);
-  const {runtime } = oneEpisode;
-  const runTime = formatRuntime(runtime);
-  const {summary} = oneEpisode;
-  const summaryTag = cleanSummary(summary)
-
-  const preparedEpisodeData = {
-    name: oneEpisode.name,
-    code,
-    runTime,
-    summaryTag,
-    image: oneEpisode.image,
-  };
-  // renderEpisodes(oneEpisode);
+  //Prepared Episode Data => Combines formatted property and every other property the UI needs
+  const preparedEpisodeData = allEpisodes.map((episode) => {
+    const {season, number, runtime, summary} = episode;
+    const code = formatEpisodeCode(season, number);
+    const runTime = formatRuntime(runtime);
+    const summaryTag = cleanSummary(summary);
+  
+    return {
+      name: episode.name,
+      code,
+      image: episode.image.medium,
+      runtime: runTime,
+      summary: summaryTag
+    };
+  })
+  
+  // renderEpisodes;
   renderEpisodes(preparedEpisodeData);
 }
 
@@ -28,28 +28,29 @@ function renderEpisodes(episodeList) {
   //Select and create HTML elements
   const rootElem = document.getElementById("root");
   const sectionEl = document.createElement("section");
+  rootElem.appendChild(sectionEl);
   const innerDivEl = document.createElement("div");
-  const pElemName = document.createElement("p");
-  const pElemCode = document.createElement("span");
-  const imageEl = document.createElement("img");
-  const pElemRuntime = document.createElement("p");
-  const pElemSummary = document.createElement("p");
+  sectionEl.appendChild(innerDivEl);
 
   //Append child element to parent element
-  rootElem.appendChild(sectionEl);
-  sectionEl.appendChild(innerDivEl);
-  innerDivEl.appendChild(pElemName);
-  pElemName.textContent = episodeList.name;
-  pElemName.appendChild(pElemCode);
-  innerDivEl.appendChild(imageEl);
-  innerDivEl.appendChild(pElemRuntime);
-  innerDivEl.appendChild(pElemSummary);
+  for (const episode of episodeList) {
+    const pElemName = document.createElement("p");
+    innerDivEl.appendChild(pElemName);
+    pElemName.textContent = episode.name;
+    const pElemCode = document.createElement("span");
+    pElemName.appendChild(pElemCode);
+    pElemCode.textContent = episode.code;
+    const imageEl = document.createElement("img");
+    innerDivEl.appendChild(imageEl);
+    imageEl.src = episode.image;
+    const pElemRuntime = document.createElement("p");
+    innerDivEl.appendChild(pElemRuntime);
+    pElemRuntime.textContent = episode.runtime;
+    const pElemSummary = document.createElement("p");
+    innerDivEl.appendChild(pElemSummary);
+    pElemSummary.textContent = episode.summary;
+  }
 
-  //Manipulate content for display
-  pElemCode.textContent = episodeList.code;
-  imageEl.src = episodeList.image.medium;
-  pElemRuntime.textContent = episodeList.runTime;
-  pElemSummary.textContent = episodeList.summaryTag;
 }
 
 //Formatters => Responsibilities => Should transform data into UI-friendly data
