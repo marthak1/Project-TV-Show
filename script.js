@@ -5,18 +5,16 @@ function setup() {
 
   //Prepared Episode Data => Combines formatted property and every other property the UI needs
   const preparedEpisodeData = allEpisodes.map((episode) => {
-    const {season, number, runtime, summary} = episode;
-    const code = formatEpisodeCode(season, number);
-    const runTime = formatRuntime(runtime);
-    const summaryTag = cleanSummary(summary);
+    const {season, number, runtime} = episode;
   
     return {
       name: episode.name,
-      code,
+      code: formatEpisodeCode(season, number),
       image: episode.image.medium,
-      runtime: runTime,
-      summary: summaryTag
+      runtime: formatRuntime(runtime),
+      summary: episode.summary
     };
+
   })
   
   // renderEpisodes;
@@ -29,6 +27,7 @@ function renderEpisodes(episodeList) {
   //Select and create HTML elements
   const rootElem = document.getElementById("root");
   const sectionEl = document.createElement("section");
+  sectionEl.classList.add("episode-section");
   rootElem.appendChild(sectionEl);
   
   //For each episode data => create DOM element, store and append to section element
@@ -41,22 +40,37 @@ function renderEpisodes(episodeList) {
 //UI Component Card => Responsibility => Should take one episode data, create DOM Elements and return a fully built episode card
 function createEpisodeCard(episode) {
   const articleEl = document.createElement("article");
-  const pElemName = document.createElement("p");
-  articleEl.appendChild(pElemName);
-  pElemName.textContent = episode.name;
-  const pElemCode = document.createElement("span");
-  pElemName.appendChild(pElemCode);
-  pElemCode.textContent = episode.code;
+  articleEl.classList.add("episode-card");
+
+  // Content wrapper
+  const contentEl = document.createElement("div");
+  contentEl.classList.add("episode-content");
+  articleEl.appendChild(contentEl);
+
+  const titleEl = document.createElement("h3");
+  articleEl.appendChild(titleEl);
+  titleEl.classList.add("episode-title");
+  titleEl.textContent = episode.name;
+
+  const seasonCodeEl = document.createElement("span");
+  titleEl.appendChild(seasonCodeEl);
+  seasonCodeEl.classList.add("episode-code");
+  seasonCodeEl.textContent = episode.code;
+
   const imageEl = document.createElement("img");
   articleEl.appendChild(imageEl);
   imageEl.src = episode.image;
+  imageEl.alt = episode.name;
+
   const pElemRuntime = document.createElement("p");
   articleEl.appendChild(pElemRuntime);
   pElemRuntime.textContent = episode.runtime;
-  const pElemSummary = document.createElement("p");
-  articleEl.appendChild(pElemSummary);
-  pElemSummary.textContent = episode.summary;
-
+  
+  const summaryEl = document.createElement("p");
+  summaryEl.classList.add("episode-summary");
+  summaryEl.innerHTML = episode.summary;
+  articleEl.appendChild(summaryEl);
+  
   return articleEl;
 }
 
@@ -70,10 +84,6 @@ function formatEpisodeCode(seasonCode, numberCode) {
 function formatRuntime(time) {
   const hour = Math.floor(time / 60);
   const remainingMinute = time % 60;
-  return `Airtime: ${String(hour).padStart(2,"0")}:${String(remainingMinute).padStart(2, "0")}`;
-}
-//removes the p tag from summary text
-function cleanSummary(sumParagraph) {
-  return `${String(sumParagraph).slice(3, -4)}`
+  return `${String(hour).padStart(2,"0")}:${String(remainingMinute).padStart(2, "0")}`;
 }
 window.onload = setup;
