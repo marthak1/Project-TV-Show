@@ -29,6 +29,7 @@ function renderEpisodes(episodeList) {
   //Select and create HTML elements
   const rootElem = document.getElementById("root");
   const sectionEl = document.createElement("section");
+  sectionEl.classList.add("episode-section");
   rootElem.appendChild(sectionEl);
   
   //For each episode data => create DOM element, store and append to section element
@@ -41,6 +42,7 @@ function renderEpisodes(episodeList) {
 //UI Component Card => Responsibility => Should take one episode data, create DOM Elements and return a fully built episode card
 function createEpisodeCard(episode) {
   const articleEl = document.createElement("article");
+  articleEl.classList.add("episode-card");
   const pElemName = document.createElement("p");
   articleEl.appendChild(pElemName);
   pElemName.textContent = episode.name;
@@ -50,6 +52,7 @@ function createEpisodeCard(episode) {
   const imageEl = document.createElement("img");
   articleEl.appendChild(imageEl);
   imageEl.src = episode.image;
+  imageEl.alt = episode.name;
   const pElemRuntime = document.createElement("p");
   articleEl.appendChild(pElemRuntime);
   pElemRuntime.textContent = episode.runtime;
@@ -77,3 +80,4 @@ function cleanSummary(sumParagraph) {
   return `${String(sumParagraph).slice(3, -4)}`
 }
 window.onload = setup;
+articleEl.classList.add("episode-card");

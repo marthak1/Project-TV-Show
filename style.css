@@ -1,3 +1,19 @@
+*{
+  box-sizing: border-box;
+}
 #root {
   color: gray;
+}
+/* .episode-section{
+
+} */
+.episode-card{
+  display: block;
+  margin: 50px;
+  margin-bottom: 8px;
+  background-color: aliceblue;
+  text-align: center;
+  padding: 20px
+  
+
 }
