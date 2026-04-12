@@ -52,6 +52,10 @@ function renderEpisodes(episodeList) {
   }
 
 }
+//UI Component Card => Responsibility => Should take one episode data, create DOM Elements and return a fully built episode card
+function createEpisodeCard(){
+
+}
 
 //Formatters => Responsibilities => Should transform data into UI-friendly data
 //transforms season + number properties into format as S01E01
