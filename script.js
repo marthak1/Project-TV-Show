@@ -5,18 +5,16 @@ function setup() {
 
   //Prepared Episode Data => Combines formatted property and every other property the UI needs
   const preparedEpisodeData = allEpisodes.map((episode) => {
-    const {season, number, runtime, summary} = episode;
-    const code = formatEpisodeCode(season, number);
-    const runTime = formatRuntime(runtime);
-    const summaryTag = cleanSummary(summary);
+    const {season, number, runtime} = episode;
   
     return {
       name: episode.name,
-      code,
+      code: formatEpisodeCode(season, number),
       image: episode.image.medium,
-      runtime: runTime,
-      summary: summaryTag
+      runtime: formatRuntime(runtime),
+      summary: episode.summary
     };
+
   })
   
   // renderEpisodes;
@@ -67,10 +65,12 @@ function createEpisodeCard(episode) {
   const pElemRuntime = document.createElement("p");
   articleEl.appendChild(pElemRuntime);
   pElemRuntime.textContent = episode.runtime;
-  const pElemSummary = document.createElement("p");
-  articleEl.appendChild(pElemSummary);
-  pElemSummary.textContent = episode.summary;
-
+  
+  const summaryEl = document.createElement("p");
+  summaryEl.classList.add("episode-summary");
+  summaryEl.innerHTML = episode.summary;
+  articleEl.appendChild(summaryEl);
+  
   return articleEl;
 }
 
@@ -84,11 +84,6 @@ function formatEpisodeCode(seasonCode, numberCode) {
 function formatRuntime(time) {
   const hour = Math.floor(time / 60);
   const remainingMinute = time % 60;
-  return `Airtime: ${String(hour).padStart(2,"0")}:${String(remainingMinute).padStart(2, "0")}`;
-}
-//removes the p tag from summary text
-function cleanSummary(sumParagraph) {
-  return `${String(sumParagraph).slice(3, -4)}`
+  return `${String(hour).padStart(2,"0")}:${String(remainingMinute).padStart(2, "0")}`;
 }
 window.onload = setup;
-articleEl.classList.add("episode-card");
