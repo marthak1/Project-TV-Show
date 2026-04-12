@@ -21,6 +21,7 @@ function setup() {
   
   // renderEpisodes;
   renderEpisodes(preparedEpisodeData);
+
 }
 
 //Display Episodes => Responsibility => Should render formatted Data to the DOM
@@ -29,32 +30,34 @@ function renderEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
   const sectionEl = document.createElement("section");
   rootElem.appendChild(sectionEl);
-  const innerDivEl = document.createElement("div");
-  sectionEl.appendChild(innerDivEl);
-
-  //Append child element to parent element
+  
+  //For each episode data => create DOM element, store and append to section element
   for (const episode of episodeList) {
-    const pElemName = document.createElement("p");
-    innerDivEl.appendChild(pElemName);
-    pElemName.textContent = episode.name;
-    const pElemCode = document.createElement("span");
-    pElemName.appendChild(pElemCode);
-    pElemCode.textContent = episode.code;
-    const imageEl = document.createElement("img");
-    innerDivEl.appendChild(imageEl);
-    imageEl.src = episode.image;
-    const pElemRuntime = document.createElement("p");
-    innerDivEl.appendChild(pElemRuntime);
-    pElemRuntime.textContent = episode.runtime;
-    const pElemSummary = document.createElement("p");
-    innerDivEl.appendChild(pElemSummary);
-    pElemSummary.textContent = episode.summary;
+     const episodeCard = createEpisodeCard(episode)
+     sectionEl.appendChild(episodeCard);
   }
-
+ 
 }
 //UI Component Card => Responsibility => Should take one episode data, create DOM Elements and return a fully built episode card
-function createEpisodeCard(){
+function createEpisodeCard(episode) {
+  const articleEl = document.createElement("article");
+  const pElemName = document.createElement("p");
+  articleEl.appendChild(pElemName);
+  pElemName.textContent = episode.name;
+  const pElemCode = document.createElement("span");
+  pElemName.appendChild(pElemCode);
+  pElemCode.textContent = episode.code;
+  const imageEl = document.createElement("img");
+  articleEl.appendChild(imageEl);
+  imageEl.src = episode.image;
+  const pElemRuntime = document.createElement("p");
+  articleEl.appendChild(pElemRuntime);
+  pElemRuntime.textContent = episode.runtime;
+  const pElemSummary = document.createElement("p");
+  articleEl.appendChild(pElemSummary);
+  pElemSummary.textContent = episode.summary;
 
+  return articleEl;
 }
 
 //Formatters => Responsibilities => Should transform data into UI-friendly data
