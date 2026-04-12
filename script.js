@@ -43,16 +43,27 @@ function renderEpisodes(episodeList) {
 function createEpisodeCard(episode) {
   const articleEl = document.createElement("article");
   articleEl.classList.add("episode-card");
-  const pElemName = document.createElement("p");
-  articleEl.appendChild(pElemName);
-  pElemName.textContent = episode.name;
-  const pElemCode = document.createElement("span");
-  pElemName.appendChild(pElemCode);
-  pElemCode.textContent = episode.code;
+
+  // Content wrapper
+  const contentEl = document.createElement("div");
+  contentEl.classList.add("episode-content");
+  articleEl.appendChild(contentEl);
+
+  const titleEl = document.createElement("h3");
+  articleEl.appendChild(titleEl);
+  titleEl.classList.add("episode-title");
+  titleEl.textContent = episode.name;
+
+  const seasonCodeEl = document.createElement("span");
+  titleEl.appendChild(seasonCodeEl);
+  seasonCodeEl.classList.add("episode-code");
+  seasonCodeEl.textContent = episode.code;
+
   const imageEl = document.createElement("img");
   articleEl.appendChild(imageEl);
   imageEl.src = episode.image;
   imageEl.alt = episode.name;
+
   const pElemRuntime = document.createElement("p");
   articleEl.appendChild(pElemRuntime);
   pElemRuntime.textContent = episode.runtime;
