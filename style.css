@@ -34,8 +34,18 @@
   font-weight: bold;
   margin-bottom: 10px;
   padding-left: 5px;
+  position: relative;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
-
+.episode-title::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 3px;
+  background: #e50914;
+  margin-top: 6px;
+  border-radius: 2px;
+}
 .episode-code {
   font-size: 0.9rem;
   color: #aaa;
