@@ -26,6 +26,17 @@ function setup() {
 function renderEpisodes(episodeList) {
   //Select and create HTML elements
   const rootElem = document.getElementById("root");
+
+  const headerSectionEl = document.createElement("section");
+  headerSectionEl.classList.add("header-section");
+  const navBarEl = document.createElement("nav");
+  navBarEl.classList.add("nav-bar");
+  headerSectionEl.appendChild(navBarEl);
+  const searchBarEl = createSearchBox();
+  searchBarEl.classList.add("search-bar");
+  navBarEl.appendChild(searchBarEl);
+  rootElem.appendChild(headerSectionEl);
+
   const sectionEl = document.createElement("section");
   sectionEl.classList.add("episode-section");
   rootElem.appendChild(sectionEl);
@@ -74,6 +85,12 @@ function createEpisodeCard(episode) {
   return articleEl;
 }
 
+function createSearchBox() {
+  const inputEl = document.createElement("input");
+  inputEl.type = "search";
+  inputEl.placeHolder = "Search episodes...";
+  return inputEl;
+}
 //Formatters => Responsibilities => Should transform data into UI-friendly data
 //transforms season + number properties into format as S01E01
 function formatEpisodeCode(seasonCode, numberCode) {
