@@ -39,6 +39,10 @@ function renderApp(episodeList) {
   navBarEl.classList.add("nav-bar");
   headerSectionEl.appendChild(navBarEl);
 
+  const title = document.createElement("h2");
+  title.textContent = "Game of Thrones TV Episodes";
+  navBarEl.appendChild(title);
+  
   const searchBarEl = searchInput(state.episodes, renderEpisodeList);
   searchBarEl.classList.add("search-bar");
   navBarEl.appendChild(searchBarEl);
