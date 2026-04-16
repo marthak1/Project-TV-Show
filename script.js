@@ -1,9 +1,3 @@
-//State Management
-let state = {
-  episodes: [],
-  searchTerm: "",
-};
-
 //Responsibility => Should orchestrate All layers
 function setup() {
   //Fetch raw episode data
@@ -11,62 +5,37 @@ function setup() {
 
   //Prepared Episode Data => Combines formatted property and every other property the UI needs
   const preparedEpisodeData = allEpisodes.map((episode) => {
-    const { season, number, runtime } = episode;
-
+    const {season, number, runtime} = episode;
+  
     return {
       name: episode.name,
       code: formatEpisodeCode(season, number),
       image: episode.image.medium,
       runtime: formatRuntime(runtime),
-      summary: episode.summary,
+      summary: episode.summary
     };
-  });
 
-  state.episodes = preparedEpisodeData;
-  state.searchTerm = "";
+  })
+  
+  // renderEpisodes;
+  renderEpisodes(preparedEpisodeData);
 
-  renderApp(state.episodes);
 }
 
-//Render the full application structure once
-function renderApp(episodeList) {
+//Display Episodes => Responsibility => Should render formatted Data to the DOM
+function renderEpisodes(episodeList) {
+  //Select and create HTML elements
   const rootElem = document.getElementById("root");
-  rootElem.innerHTML = "";
-
-  const headerSectionEl = document.createElement("section");
-  headerSectionEl.classList.add("header-section");
-  const navBarEl = document.createElement("nav");
-  navBarEl.classList.add("nav-bar");
-  headerSectionEl.appendChild(navBarEl);
-
-  const title = document.createElement("h2");
-  title.textContent = "Game of Thrones TV Episodes";
-  navBarEl.appendChild(title);
-  
-  const searchBarEl = searchInput(state.episodes, renderEpisodeList);
-  searchBarEl.classList.add("search-bar");
-  navBarEl.appendChild(searchBarEl);
-  rootElem.appendChild(headerSectionEl);
-
   const sectionEl = document.createElement("section");
   sectionEl.classList.add("episode-section");
-  sectionEl.id = "episode-section";
   rootElem.appendChild(sectionEl);
-
-  renderEpisodeList(episodeList);
-}
-
-function renderEpisodeList(episodeList) {
-  const sectionEl = document.getElementById("episode-section");
-  if (!sectionEl) {
-    return;
-  }
-
-  sectionEl.innerHTML = "";
+  
+  //For each episode data => create DOM element, store and append to section element
   for (const episode of episodeList) {
-    const episodeCard = createEpisodeCard(episode);
-    sectionEl.appendChild(episodeCard);
+     const episodeCard = createEpisodeCard(episode)
+     sectionEl.appendChild(episodeCard);
   }
+ 
 }
 //UI Component Card => Responsibility => Should take one episode data, create DOM Elements and return a fully built episode card
 function createEpisodeCard(episode) {
@@ -96,41 +65,15 @@ function createEpisodeCard(episode) {
   const pElemRuntime = document.createElement("p");
   articleEl.appendChild(pElemRuntime);
   pElemRuntime.textContent = episode.runtime;
-
+  
   const summaryEl = document.createElement("p");
   summaryEl.classList.add("episode-summary");
   summaryEl.innerHTML = episode.summary;
   articleEl.appendChild(summaryEl);
-
+  
   return articleEl;
 }
 
-function searchInput(episodes, renderfn) {
-  const searchBoxEl = document.createElement("input");
-  searchBoxEl.type = "search";
-  searchBoxEl.placeholder = "Search episodes...";
-  searchBoxEl.value = state.searchTerm;
-  searchBoxEl.addEventListener("input", (event) => {
-    const query = event.target.value;
-    state.searchTerm = query;
-    const filteredEpisodes = handleSearchInput(query, episodes);
-    renderfn(filteredEpisodes);
-  });
-  return searchBoxEl;
-}
-
-function handleSearchInput(query, episodeList) {
-  const searchTerm = query.trim().toLowerCase();
-  if (searchTerm === "") {
-    return episodeList;
-  }
-
-  return episodeList.filter((episode) => {
-    const name = episode.name.toLowerCase();
-    const summary = episode.summary ? episode.summary.toLowerCase() : "";
-    return name.includes(searchTerm) || summary.includes(searchTerm);
-  });
-}
 //Formatters => Responsibilities => Should transform data into UI-friendly data
 //transforms season + number properties into format as S01E01
 function formatEpisodeCode(seasonCode, numberCode) {
@@ -141,6 +84,6 @@ function formatEpisodeCode(seasonCode, numberCode) {
 function formatRuntime(time) {
   const hour = Math.floor(time / 60);
   const remainingMinute = time % 60;
-  return `${String(hour).padStart(2, "0")}:${String(remainingMinute).padStart(2, "0")}`;
+  return `${String(hour).padStart(2,"0")}:${String(remainingMinute).padStart(2, "0")}`;
 }
 window.onload = setup;
