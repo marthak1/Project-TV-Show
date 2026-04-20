@@ -4,7 +4,7 @@ function setup() {
   const allEpisodes = getAllEpisodes();
 
   //Prepared Episode Data => Combines formatted property and every other property the UI needs
-  const preparedEpisodeData = allEpisodes.map((episode) => {
+  state.episodes  = allEpisodes.map((episode) => {
     const {season, number, runtime} = episode;
   
     return {
@@ -16,9 +16,8 @@ function setup() {
     };
 
   });
-  
-  // renderEpisodes;
-  renderEpisodes(allPreparedEpisodes);
+  setupSearch();
+  render();
 }
 
 //Display Episodes => Responsibility => Should render formatted Data to the DOM
@@ -85,4 +84,10 @@ function formatRuntime(time) {
   const remainingMinute = time % 60;
   return `${String(hour).padStart(2,"0")}:${String(remainingMinute).padStart(2, "0")}`;
 }
+
+const state = {
+  episodes : [],
+  searchterm: ""
+};
+
 window.onload = setup;
