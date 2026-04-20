@@ -31,6 +31,12 @@ function render() {
   rootElem.innerHTML = "";
 
   // searchInput 
+  const headerEL = document.createElement("section");
+  headerEL.classList.add("header-section");
+
+  const navBarEl = document.createElement("nav");
+  navBarEl.classList.add("nav-bar");
+
 const input = document.createElement("input");
 input.type ="text";
 input.placeholder = "search episodes...";
@@ -38,10 +44,12 @@ input.value = state.searchterm;
 
 // live search updates state + re-render:
 input.addEventListener("input", (e) => {
-  state.earchterm = e.target.value;
+  state.searchterm = e.target.value;
   render();
 });
-rootElem.appendChild(input);
+navBarEl.appendChild(input);
+headerEL.appendChild(navBarEl);
+rootElem.appendChild(headerEL);
 
 // filter logic
 const filteredEpisodes = state.episodes.filter((episode) => {
@@ -53,11 +61,11 @@ const filteredEpisodes = state.episodes.filter((episode) => {
 });
 
 // result count:
-const resultCountEl = document.createElement("p");
-resultCountEl.textContent = `Found ${filteredEpisodes.length} episodes`;
-rootElem.appendChild(resultCountEl);
+ const count = document.createElement("p");
+ count.textContent = `Displaying ${filteredEpisodes.length} / ${state.episodes.length} episodes`;
+ rootElem.appendChild(count);
 
-   renderEpisodes(filteredEpisodes);
+ renderEpisodes(filteredEpisodes);
 
 }
 
@@ -125,7 +133,6 @@ function formatRuntime(time) {
   const remainingMinute = time % 60;
   return `${String(hour).padStart(2,"0")}:${String(remainingMinute).padStart(2, "0")}`;
 }
-
 
 
 window.onload = setup;
