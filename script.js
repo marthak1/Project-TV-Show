@@ -1,4 +1,5 @@
 //Responsibility => Should orchestrate All layers
+let allPreparedEpisodes = [];
 function setup() {
   //Fetch raw episode data
   const allEpisodes = getAllEpisodes();
@@ -15,11 +16,11 @@ function setup() {
       summary: episode.summary
     };
 
-  })
+  });
   
   // renderEpisodes;
-  renderEpisodes(preparedEpisodeData);
-
+  renderEpisodes(allPreparedEpisodes);
+setupSearch();
 }
 
 //Display Episodes => Responsibility => Should render formatted Data to the DOM
