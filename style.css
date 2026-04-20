@@ -56,3 +56,52 @@
   padding-left: 5px;
 }
 
+/* Header background */
+.header-section {
+  width: 100%;
+  background-color: #1f2937;
+  padding: 16px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Navbar layout */
+.nav-bar {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+}
+
+/* Title centered */
+.app-title {
+  flex: 1;
+  /* 🔥 takes available space */
+  text-align: center;
+
+  font-size: 22px;
+  font-weight: bold;
+  color: #f9fafb;
+  margin: 0;
+}
+
+/* Search box right aligned */
+.nav-bar input {
+  margin-left: auto;
+  /* 🔥 pushes it right */
+
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+
+  background-color: #374151;
+  color: #f9fafb;
+
+  outline: none;
+  width: 220px;
+}
+
+/* Focus effect */
+.nav-bar input:focus {
+  box-shadow: 0 0 0 2px #3b82f6;
+}
