@@ -2,7 +2,7 @@
 
 const state = {
   episodes: [],
-  searchterm: "",
+  searchterm: "", 
 };
 function setup() {
   //Fetch raw episode data
