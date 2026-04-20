@@ -1,4 +1,9 @@
 //Responsibility => Should orchestrate All layers
+
+const state = {
+  episodes: [],
+  searchterm: "",
+};
 function setup() {
   //Fetch raw episode data
   const allEpisodes = getAllEpisodes();
@@ -16,25 +21,61 @@ function setup() {
     };
 
   });
-  setupSearch();
   render();
 }
 
 //Display Episodes => Responsibility => Should render formatted Data to the DOM
-function renderEpisodes(episodeList) {
+function render() {
   //Select and create HTML elements
   const rootElem = document.getElementById("root");
+  rootElem.innerHTML = "";
+
+  // searchInput 
+const input = document.createElement("input");
+input.type ="text";
+input.placeholder = "search episodes...";
+input.value = state.searchterm;
+
+// live search updates state + re-render:
+input.addEventListener("input", (e) => {
+  state.earchterm = e.target.value;
+  render();
+});
+rootElem.appendChild(input);
+
+// filter logic
+const filteredEpisodes = state.episodes.filter((episode) => {
+  const term = state.searchterm.toLowerCase();
+  return (
+    episode.name.toLowerCase().includes(term) ||
+    episode.summary.toLowerCase().includes(term)
+  );
+});
+
+// result count:
+const resultCountEl = document.createElement("p");
+resultCountEl.textContent = `Found ${filteredEpisodes.length} episodes`;
+rootElem.appendChild(resultCountEl);
+
+   renderEpisodes(filteredEpisodes);
+
+}
+
+//Display Episodes
+function renderEpisodes(episodeList) {
+  const rootElem = document.getElementById("root");
+
   const sectionEl = document.createElement("section");
   sectionEl.classList.add("episode-section");
-  rootElem.appendChild(sectionEl);
-  
-  //For each episode data => create DOM element, store and append to section element
+
   for (const episode of episodeList) {
-     const episodeCard = createEpisodeCard(episode)
-     sectionEl.appendChild(episodeCard);
+    const episodeCard = createEpisodeCard(episode);
+    sectionEl.appendChild(episodeCard);
   }
- 
+
+  rootElem.appendChild(sectionEl);
 }
+
 //UI Component Card => Responsibility => Should take one episode data, create DOM Elements and return a fully built episode card
 function createEpisodeCard(episode) {
   const articleEl = document.createElement("article");
@@ -85,9 +126,6 @@ function formatRuntime(time) {
   return `${String(hour).padStart(2,"0")}:${String(remainingMinute).padStart(2, "0")}`;
 }
 
-const state = {
-  episodes : [],
-  searchterm: ""
-};
+
 
 window.onload = setup;
