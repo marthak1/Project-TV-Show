@@ -57,6 +57,7 @@ async function setup() {
       summary: show.summary,
     };
   });
+  state.tvShows = preparedShowData;
 
   //Prepared Episode Data => Combines formatted property and every other property the UI needs
   const preparedEpisodeData = allEpisodes.map((episode) => {
@@ -82,8 +83,14 @@ async function setup() {
 function renderApp() {
   const bodyEl = document.querySelector("body");
   const rootElem = document.getElementById("root");
-  const oldCards = rootElem.querySelectorAll(".episode-card");
-    oldCards.forEach((card) => card.remove());
+  const oldEpisodeCards = rootElem.querySelectorAll(".episode-card");
+  const oldShowCards = rootElem.querySelectorAll(".show-card")
+  if(oldEpisodeCards){
+    oldEpisodeCards.forEach((card) => card.remove());
+  }
+  else{
+    oldShowCards.forEach((card) => card.remove);
+  }
 
   const headerSectionEl = document.createElement("section");
   headerSectionEl.classList.add("header-section");
@@ -129,6 +136,7 @@ function renderApp() {
     <a href="https://tvmaze.com/" target="_blank">TVMaze.com</a>
   `;
   rootElem.appendChild(footerEl);
+  renderShowList(state.tvShows); 
   renderEpisodeList(state.episodes);
   
 }
