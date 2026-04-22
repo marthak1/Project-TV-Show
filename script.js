@@ -167,11 +167,11 @@ function createShowCard(show){
 
     const pElemGenres = document.createElement("p");
     articleEl.appendChild(pElemGenres);
-    pElemGenres.textContent = show.genres;
+    pElemGenres.textContent = `Genres: ${show.genres}`;
 
     const pElemRating = document.createElement("p");
     articleEl.appendChild(pElemRating)
-    pElemRating.textContent = show.rating;
+    pElemRating.textContent = `Rating: ${show.rating.average}`;
 
     const summaryEl = document.createElement("p");
     summaryEl.classList.add("show-summary");
@@ -296,7 +296,7 @@ function formatEpisodeCode(seasonCode, numberCode) {
 function formatRuntime(time) {
   const hour = Math.floor(time / 60);
   const remainingMinute = time % 60;
-  return `${String(hour).padStart(2, "0")}:${String(remainingMinute).padStart(2, "0")}`;
+  return `Runtime: ${String(hour).padStart(2, "0")}:${String(remainingMinute).padStart(2, "0")}`;
 }
 
 function hideLoadingOverlay() {
