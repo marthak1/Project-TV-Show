@@ -1,4 +1,4 @@
-//Responsibility => Should orchestrate All layers
+// Responsibility => Should orchestrate all layers
 
 const state = {
   episodes: [],
@@ -14,21 +14,20 @@ function setup() {
     return {
       name: episode.name,
       code: formatEpisodeCode(season, number),
-      image: episode.image?.medium || "", // ✅ FIXED
+      image: episode.image?.medium || "",
       runtime: formatRuntime(runtime),
       summary: episode.summary,
     };
   });
 
-  render();
+  renderHeader(); // ✅ render once
+  render(); // ✅ update dynamic content
 }
 
-//Display Episodes => Should render formatted Data to the DOM
-function render() {
+// ---------------- HEADER (STATIC - render once) ----------------
+function renderHeader() {
   const rootElem = document.getElementById("root");
-  rootElem.innerHTML = "";
 
-  // -------- HEADER --------
   const headerEL = document.createElement("section");
   headerEL.classList.add("header-section");
 
@@ -40,43 +39,52 @@ function render() {
 
   const input = document.createElement("input");
   input.type = "text";
-  input.placeholder = "search episodes...";
-  input.value = state.searchterm;
+  input.placeholder = "Search episodes...";
 
   input.addEventListener("input", (e) => {
     state.searchterm = e.target.value;
-    render();
+    render(); // ✅ only updates list now
   });
 
   navBarEl.appendChild(titleEl);
   navBarEl.appendChild(input);
   headerEL.appendChild(navBarEl);
 
-  rootElem.appendChild(headerEL); // ✅ FIXED (was broken)
+  rootElem.appendChild(headerEL);
 
-  // -------- FILTER --------
+  // ✅ create content container once
+  const content = document.createElement("div");
+  content.id = "content";
+  rootElem.appendChild(content);
+}
+
+// ---------------- RENDER (DYNAMIC ONLY) ----------------
+function render() {
+  const content = document.getElementById("content");
+  content.innerHTML = "";
+
   const term = state.searchterm.toLowerCase();
 
   const filteredEpisodes = state.episodes.filter((episode) => {
-    return (
-      episode.name.toLowerCase().includes(term) ||
-      episode.summary.toLowerCase().includes(term)
-    );
+    const name = episode.name?.toLowerCase() || "";
+    const summary = episode.summary
+      ? episode.summary.replace(/<[^>]*>/g, "").toLowerCase()
+      : "";
+
+    return name.includes(term) || summary.includes(term);
   });
 
   // -------- COUNT --------
   const count = document.createElement("p");
   count.textContent = `Displaying ${filteredEpisodes.length} / ${state.episodes.length} episodes`;
-  rootElem.appendChild(count);
+  content.appendChild(count);
 
   // -------- EPISODES --------
-  renderEpisodes(filteredEpisodes);
+  renderEpisodes(filteredEpisodes, content);
 }
 
-//Display Episodes
-function renderEpisodes(episodeList) {
-  const rootElem = document.getElementById("root");
-
+// ---------------- EPISODE LIST ----------------
+function renderEpisodes(episodeList, container) {
   const sectionEl = document.createElement("section");
   sectionEl.classList.add("episode-section");
 
@@ -84,10 +92,10 @@ function renderEpisodes(episodeList) {
     sectionEl.appendChild(createEpisodeCard(episode));
   }
 
-  rootElem.appendChild(sectionEl);
+  container.appendChild(sectionEl);
 }
 
-//UI Component Card
+// ---------------- CARD COMPONENT ----------------
 function createEpisodeCard(episode) {
   const articleEl = document.createElement("article");
   articleEl.classList.add("episode-card");
@@ -124,7 +132,7 @@ function createEpisodeCard(episode) {
   return articleEl;
 }
 
-//Formatters
+// ---------------- FORMATTERS ----------------
 function formatEpisodeCode(seasonCode, numberCode) {
   return ` - S${String(seasonCode).padStart(2, "0")}E${String(numberCode).padStart(2, "0")}`;
 }
