@@ -3,6 +3,7 @@ let state = {
   episodes: [],
   searchTerm: "",
   counterEl: null,
+  tvShows: [],
 };
 let cachedEpisodeData = null;
 const getAllEpisodes = async (url) => {
@@ -20,12 +21,30 @@ const getAllEpisodes = async (url) => {
   } 
 };
 
+let cachedTvShowData = null;
+const getAllTvShows = async (url) => {
+  if (cachedTvShowData) return cachedTvShowData;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP: ${response.status}`);
+    }
+    cachedTvShowData = await response.json();
+    return cachedTvShowData;
+  } catch (error) {
+    console.error("Failed to load episodes", error);
+    alert("Failed to load episodes");
+  }
+};
 //Responsibility => Should orchestrate All layers
 async function setup() {
   //Fetch raw episode data from API
   const allEpisodes = await getAllEpisodes(
     "https://api.tvmaze.com/shows/82/episodes",
   );
+
+  //Fetch raw show data
+  const getAllShows = await getAllTvShows("https://api.tvmaze.com/shows");
 
   //Prepared Episode Data => Combines formatted property and every other property the UI needs
   const preparedEpisodeData = allEpisodes.map((episode) => {
