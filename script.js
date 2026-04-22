@@ -38,13 +38,25 @@ const getAllTvShows = async (url) => {
 };
 //Responsibility => Should orchestrate All layers
 async function setup() {
+  //Fetch raw show data
+  const getAllShows = await getAllTvShows("https://api.tvmaze.com/shows");
+
   //Fetch raw episode data from API
   const allEpisodes = await getAllEpisodes(
     "https://api.tvmaze.com/shows/82/episodes",
   );
+  const preparedShowData = getAllShows.map((show) => {
+    const { runtime } = show;
 
-  //Fetch raw show data
-  const getAllShows = await getAllTvShows("https://api.tvmaze.com/shows");
+    return {
+      name: show.name,
+      image: show.image?.medium || "",
+      runtime: formatRuntime(runtime),
+      genres: show.genres,
+      rating: show.rating,
+      summary: show.summary,
+    };
+  });
 
   //Prepared Episode Data => Combines formatted property and every other property the UI needs
   const preparedEpisodeData = allEpisodes.map((episode) => {
@@ -59,16 +71,15 @@ async function setup() {
     };
   });
 
-  state.episodes = preparedEpisodeData;  //<--------- Add prepared data for state management
+  state.episodes = preparedEpisodeData; //<--------- Add prepared data for state management
   state.searchTerm = "";
 
   renderApp(state.episodes);
   hideLoadingOverlay();
-  
 }
 
 //Responsibility => Renders page => Render the full application structure once 
-function renderApp(episodeList) {
+function renderApp() {
   const bodyEl = document.querySelector("body");
   const rootElem = document.getElementById("root");
   const oldCards = rootElem.querySelectorAll(".episode-card");
@@ -120,6 +131,46 @@ function renderApp(episodeList) {
   rootElem.appendChild(footerEl);
   renderEpisodeList(state.episodes);
   
+}
+//Tv Show Card Component
+//  1. For each show, you must display at least name, image, summary, genres, status, rating, and runtime.
+function createShowCard(show){
+    const articleEl = document.createElement("article");
+    articleEl.classList.add("show-card");
+
+    //Tv show content wrapper
+    const contentEl = document.createElement("div");
+    contentEl.classList.add("show-content");
+    articleEl.appendChild(contentEl);
+    
+    const titleEl = document.createElement("h3");
+    articleEl.appendChild(titleEl);
+    titleEl.classList.add("show-title");
+    titleEl.textContent = show.name;
+
+    const imageEl = document.createElement("img");
+    articleEl.appendChild(imageEl);
+    imageEl.src = show.image;
+    imageEl.alt = show.name;
+
+    const pElemRuntime = document.createElement("p");
+    articleEl.appendChild(pElemRuntime);
+    pElemRuntime.textContent = show.runtime;
+
+    const pElemGenres = document.createElement("p");
+    articleEl.appendChild(pElemGenres);
+    pElemGenres.textContent = show.genres;
+
+    const pElemRating = document.createElement("p");
+    articleEl.appendChild(pElemRating)
+    pElemRating.textContent = show.rating;
+
+    const summaryEl = document.createElement("p");
+    summaryEl.classList.add("show-summary");
+    summaryEl.innerHTML = show.summary;
+    articleEl.appendChild(summaryEl);
+
+     return articleEl;
 }
 
 //Responsibilities renders episode list
