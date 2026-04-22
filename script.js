@@ -5,21 +5,21 @@ let state = {
   counterEl: null,
   tvShows: [],
 };
-let cachedEpisodeData = null;
-const getAllEpisodes = async (url) => {
-  if (cachedEpisodeData) return cachedEpisodeData;
-  try {  
-    const response = await fetch(url);
-    if(!response.ok){
-    throw new Error(`HTTP: ${response.status}`);
-    }
-    cachedEpisodeData = await response.json();
-    return cachedEpisodeData;
-  } catch (error) {
-    console.error("Failed to load episodes",error)
-    alert("Failed to load episodes");
-  } 
-};
+// let cachedEpisodeData = null;
+// const getAllEpisodes = async (url) => {
+//   if (cachedEpisodeData) return cachedEpisodeData;
+//   try {  
+//     const response = await fetch(url);
+//     if(!response.ok){
+//     throw new Error(`HTTP: ${response.status}`);
+//     }
+//     cachedEpisodeData = await response.json();
+//     return cachedEpisodeData;
+//   } catch (error) {
+//     console.error("Failed to load episodes",error)
+//     alert("Failed to load episodes");
+//   } 
+// };
 
 let cachedTvShowData = null;
 const getAllTvShows = async (url) => {
@@ -42,9 +42,9 @@ async function setup() {
   const getAllShows = await getAllTvShows("https://api.tvmaze.com/shows");
 
   //Fetch raw episode data from API
-  const allEpisodes = await getAllEpisodes(
-    "https://api.tvmaze.com/shows/82/episodes",
-  );
+  // const allEpisodes = await getAllEpisodes(
+  //   "https://api.tvmaze.com/shows/82/episodes",
+  // );
   const preparedShowData = getAllShows.map((show) => {
     const { runtime } = show;
 
@@ -60,22 +60,23 @@ async function setup() {
   state.tvShows = preparedShowData;
 
   //Prepared Episode Data => Combines formatted property and every other property the UI needs
-  const preparedEpisodeData = allEpisodes.map((episode) => {
-    const { season, number, runtime } = episode;
+  // const preparedEpisodeData = allEpisodes.map((episode) => {
+  //   const { season, number, runtime } = episode;
 
-    return {
-      name: episode.name,
-      code: formatEpisodeCode(season, number),
-      image: episode.image?.medium || "",
-      runtime: formatRuntime(runtime),
-      summary: episode.summary,
-    };
-  });
+  //   return {
+  //     name: episode.name,
+  //     code: formatEpisodeCode(season, number),
+  //     image: episode.image?.medium || "",
+  //     runtime: formatRuntime(runtime),
+  //     summary: episode.summary,
+  //   };
+  // });
 
-  state.episodes = preparedEpisodeData; //<--------- Add prepared data for state management
+  // state.episodes = preparedEpisodeData; //<--------- Add prepared data for state management
   state.searchTerm = "";
 
   renderApp(state.episodes);
+  // renderApp(state.tvShows);
   hideLoadingOverlay();
 }
 
@@ -137,7 +138,7 @@ function renderApp() {
   `;
   rootElem.appendChild(footerEl);
   renderShowList(state.tvShows); 
-  renderEpisodeList(state.episodes);
+  // renderEpisodeList(state.episodes);
   
 }
 //Tv Show Card Component
