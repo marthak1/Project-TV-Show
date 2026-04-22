@@ -109,10 +109,10 @@ function renderApp() {
   spinnerEl.classList.add("spinner");
   loadingOverlayEl.appendChild(spinnerEl);
 
-  const sectionEl = document.createElement("section");
-  sectionEl.classList.add("episode-section");
-  sectionEl.id = "episode-section";
-  rootElem.appendChild(sectionEl);
+  const mainSectionEl = document.createElement("section");
+  mainSectionEl.classList.add("main-section");
+  mainSectionEl.id = "main-section";
+  rootElem.appendChild(mainSectionEl);
 
   const counter = document.createElement("p");
   counter.classList.add("counter");
@@ -173,10 +173,28 @@ function createShowCard(show){
      return articleEl;
 }
 
+//Responsibilities renders show list
+function renderShowList(showList) {
+  const rootElem = document.getElementById("root");
+  const sectionEl = document.getElementById("main-section");
+  if (!sectionEl) {
+    return;
+  }
+
+  // sectionEl.innerHTML = "";
+  const oldCards = rootElem.querySelectorAll(".show-card");
+  oldCards.forEach((card) => card.remove());
+  for (const show of showList) {
+    const showCard = createShowCard(show);
+    sectionEl.appendChild(showCard);
+  }
+  updateCounter(showList, state.tvShows);
+}
+
 //Responsibilities renders episode list
 function renderEpisodeList(episodeList) {
   const rootElem = document.getElementById("root");
-  const sectionEl = document.getElementById("episode-section");
+  const sectionEl = document.getElementById("main-section");
   if (!sectionEl) {
     return;
   }
