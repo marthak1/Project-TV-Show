@@ -20,7 +20,7 @@ let cachedTvShowData = null;
 const getAllTvShows = async (url) => {
   if (cachedTvShowData) return cachedTvShowData;
   try {
-    const response = await fetch(url);
+    const response = await fetch("https://api.tvmaze.com/shows");
     if (!response.ok) throw new Error(`HTTP: ${response.status}`);
     cachedTvShowData = await response.json();
     return cachedTvShowData;
@@ -31,11 +31,15 @@ const getAllTvShows = async (url) => {
   }
 };
 
+const cachedEpisodes = {};
 const getEpisodesForShow = async (showId) => {
+  if (cachedEpisodes[showId]) return cachedEpisodes[showId];
   try {
     const res = await fetch(`https://api.tvmaze.com/shows/${showId}/episodes`);
     if (!res.ok) throw new Error(`HTTP: ${res.status}`);
-    return await res.json();
+    const data = await res.json();
+    cachedEpisodes[showId] = data;
+    return data;
   } catch (error) {
     console.error("Failed to load episodes", error);
     alert("Failed to load episodes");
@@ -56,27 +60,26 @@ function formatRuntime(time) {
 }
 
 //FILTER FUNCTIONS
-function filterShows(showList, searchTerm, selectedShowId) {
+function filterShows(showList, searchTerm) {
   const term = searchTerm.trim().toLowerCase();
-  
-  return showList.filter(show => {
-    const matchesSelect = !selectedShowId || show.id == selectedShowId;
-    const matchesSearch = term === "" || 
+  if (term === "") return showList;
+
+  return showList.filter(
+    (show) =>
       show.name.toLowerCase().includes(term) ||
       show.summary.toLowerCase().includes(term) ||
-      show.genres.some(g => g.toLowerCase().includes(term));
-    
-    return matchesSelect && matchesSearch;
-  });
+      show.genres.some((g) => g.toLowerCase().includes(term)),
+  );
 }
 
 function filterEpisodes(episodeList, searchTerm) {
   const term = searchTerm.trim().toLowerCase();
   if (term === "") return episodeList;
-  
-  return episodeList.filter(ep => 
-    ep.name.toLowerCase().includes(term) ||
-    ep.summary.toLowerCase().includes(term)
+
+  return episodeList.filter(
+    (ep) =>
+      ep.name.toLowerCase().includes(term) ||
+      ep.summary.toLowerCase().includes(term),
   );
 }
 
@@ -131,60 +134,65 @@ function renderShowList(showList) {
   updateCounter(showList, state.tvShows, 'shows');
 }
 
+function renderShowList(showList) {
+  const sectionEl = document.getElementById("main-section");
+  sectionEl.innerHTML = ""; // Hide episodes, show listing
+  for (const show of showList) {
+    sectionEl.appendChild(createShowCard(show));
+  }
+  updateCounter(showList, state.tvShows, "shows");
+}
+
 function renderEpisodeList(episodeList) {
   const sectionEl = document.getElementById("main-section");
-  sectionEl.innerHTML = "";
-  
-  const backBtn = document.createElement("button");
-  backBtn.textContent = "← Back to Shows";
-  backBtn.onclick = () => setState({ 
-    currentView: 'shows', 
-    selectedShowId: null, 
-    episodes: [],
-    searchTerm: "" // clear search on back
-  });
-  sectionEl.appendChild(backBtn);
-  
+  sectionEl.innerHTML = ""; // Hide shows listing
+
+  const navLink = document.createElement("a");
+  navLink.href = "#";
+  navLink.textContent = "← Back to Shows Listing";
+  navLink.className = "back-link";
+  navLink.onclick = (e) => {
+    e.preventDefault();
+    setState({
+      currentView: "shows",
+      selectedShowId: null,
+      episodes: [],
+      searchTerm: "",
+    });
+  };
+  sectionEl.appendChild(navLink);
+
   for (const episode of episodeList) {
     sectionEl.appendChild(createEpisodeCard(episode));
   }
-  updateCounter(episodeList, state.episodes, 'episodes');
+  updateCounter(episodeList, state.episodes, "episodes");
 }
 
 // Main render - decides which view based on state
 function render() {
+  if (state.isLoading) return;
+
   const titleEl = document.getElementById("page-title");
   const selectEl = document.getElementById("show-select");
   const searchEl = document.getElementById("search-input");
-  
-  // Keep UI controls in sync with state
+
   searchEl.value = state.searchTerm;
   selectEl.value = state.selectedShowId || "";
-  
-  if (state.currentView === 'shows') {
-    titleEl.textContent = "TV Shows";
-    selectEl.style.display = 'inline-block';
-    
-    // Populate select once
-    if (selectEl.options.length <= 1 && state.tvShows.length > 0) {
-      const sortedShows = [...state.tvShows].sort((a,b) => a.name.localeCompare(b.name));
-      for (const show of sortedShows) {
-        const opt = document.createElement("option");
-        opt.value = show.id;
-        opt.textContent = show.name;
-        selectEl.appendChild(opt);
-      }
-    }
-    
-    const filtered = filterShows(state.tvShows, state.searchTerm, state.selectedShowId);
+
+  if (state.currentView === "shows") {
+    titleEl.textContent = "TV SHOW"; 
+    const filtered = filterShows(state.tvShows, state.searchTerm);
     renderShowList(filtered);
-    
-  } else if (state.currentView === 'episodes') {
-    titleEl.textContent = state.selectedShowName ? `${state.selectedShowName} - Episodes` : "Episodes";
-    selectEl.style.display = 'none';
-    
+  } else if (state.currentView === "episodes") {
+    titleEl.textContent = `${state.selectedShowName} - Episodes`;
     const filtered = filterEpisodes(state.episodes, state.searchTerm);
-    renderEpisodeList(filtered);
+    renderEpisodeList(filtered); // Shows listing hidden
+  }
+}
+
+function updateCounter(filteredList, fullList, type) {
+  if (state.counterEl) {
+    state.counterEl.textContent = `Showing ${filteredList.length} of ${fullList.length} ${type}`;
   }
 }
 
@@ -196,23 +204,23 @@ function updateCounter(filteredList, fullList, type) {
 
 //NAVIGATION
 async function navigateToEpisodes(showId, showName) {
-  setState({ 
-    isLoading: true, 
-    currentView: 'episodes', 
+  setState({
+    isLoading: true,
+    currentView: "episodes",
     selectedShowId: showId,
     selectedShowName: showName,
-    searchTerm: "" // clear search when switching views
+    searchTerm: "",
   });
-  
-  const episodes = await getEpisodesForShow(showId);
-  const preparedEpisodeData = episodes.map(episode => ({
+
+  const episodes = await getEpisodesForShow(showId); // Fetched once, then cached
+  const preparedEpisodeData = episodes.map((episode) => ({
     name: episode.name,
     code: formatEpisodeCode(episode.season, episode.number),
     image: episode.image?.medium || "",
     runtime: formatRuntime(episode.runtime),
     summary: episode.summary || "",
   }));
-  
+
   setState({ episodes: preparedEpisodeData, isLoading: false });
 }
 
@@ -222,12 +230,12 @@ function renderAppShell() {
   rootElem.innerHTML = `
     <section class="header-section">
       <nav class="nav-bar">
-        <h2 id="page-title">TV Shows</h2>
+        <h2 id="page-title">Shows Listing</h2>
         <div class="controls">
-          <input type="search" id="search-input" placeholder="Search...">
           <select id="show-select">
             <option value="">All shows</option>
           </select>
+          <input type="search" id="search-input" placeholder="Search shows/episodes...">
         </div>
         <p class="counter" id="counter"></p>
       </nav>
@@ -236,25 +244,42 @@ function renderAppShell() {
     <footer><p>Data originally from <a href="https://tvmaze.com/" target="_blank">TVMaze.com</a></p></footer>
     <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
   `;
-  
+
   state.counterEl = document.getElementById("counter");
-  
-  // Search: updates state.searchTerm on every keystroke
+
+
   document.getElementById("search-input").addEventListener("input", (e) => {
     setState({ searchTerm: e.target.value });
   });
-  
-  // Select: updates state.selectedShowId on change
+
+
   document.getElementById("show-select").addEventListener("change", (e) => {
-    setState({ selectedShowId: e.target.value || null });
+    const showId = e.target.value;
+    if (!showId) {
+      setState({
+        currentView: "shows",
+        selectedShowId: null,
+        episodes: [],
+        searchTerm: "",
+      });
+    } else {
+      const show = state.tvShows.find((s) => s.id == showId);
+      navigateToEpisodes(showId, show.name);
+    }
   });
 }
 
 async function setup() {
   renderAppShell();
-  
-  const getAllShows = await getAllTvShows("https://api.tvmaze.com/shows");
-  const preparedShowData = getAllShows.map(show => ({
+
+  const getAllShows = await getAllTvShows();
+
+
+  const sortedShows = getAllShows.sort((a, b) =>
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+  );
+
+  const preparedShowData = sortedShows.map((show) => ({
     id: show.id,
     name: show.name,
     image: show.image?.medium || "",
@@ -262,9 +287,18 @@ async function setup() {
     genres: show.genres || [],
     rating: show.rating || {},
     summary: show.summary || "",
-    status: show.status || "Unknown"
+    status: show.status || "Unknown",
   }));
-  
+
+
+  const selectEl = document.getElementById("show-select");
+  for (const show of preparedShowData) {
+    const opt = document.createElement("option");
+    opt.value = show.id;
+    opt.textContent = show.name;
+    selectEl.appendChild(opt);
+  }
+
   setState({ tvShows: preparedShowData, isLoading: false });
   hideLoadingOverlay();
 }
@@ -278,5 +312,6 @@ function hideLoadingOverlay() {
 }
 
 window.onload = setup;
+
 
 
