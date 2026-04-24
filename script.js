@@ -47,7 +47,6 @@ async function loadShows() {
   state.currentShowId = state.shows[0]?.id || null;
   populateShowSelect();
 }
-
 async function loadEpisodesForShow(showId) {
   if (!showId) return;
 
