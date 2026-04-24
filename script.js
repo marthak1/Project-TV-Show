@@ -119,7 +119,7 @@ function createEpisodeCard(episode) {
       <p class="episode-summary">${episode.summary}</p>
     </div>
   `;
-  
+  articleEl.id = `episode-${episode.id}`;
   return articleEl;
 }
 
@@ -161,6 +161,31 @@ function renderEpisodeList(episodeList) {
     });
   };
   sectionEl.appendChild(navLink);
+
+const episodeSelect = document.createElement("select");
+episodeSelect.id = "episode-select";
+episodeSelect.style.margin = "20px 0";
+episodeSelect.innerHTML = `<option value="">Jump to episode...</option>`;
+for (const episode of episodeList) {
+  const opt = document.createElement("option");
+  opt.value = episode.code; // Use episode code as value
+  opt.textContent = `${episode.code} - ${episode.name}`;
+  episodeSelect.appendChild(opt);
+}
+episodeSelect.addEventListener("change", (e) => {
+  const episodeCode = e.target.value;
+  if (episodeCode) {
+    const episodeCard = Array.from(sectionEl.children).find(
+      (child) =>
+        child.className === "episode-card" &&
+        child.querySelector(".episode-code").textContent === episodeCode,
+    );
+    if (episodeCard) {
+      episodeCard.scrollIntoView({ behavior: "smooth" });
+    }
+  }
+});
+sectionEl.appendChild(episodeSelect);
 
   for (const episode of episodeList) {
     sectionEl.appendChild(createEpisodeCard(episode));
@@ -312,6 +337,7 @@ function hideLoadingOverlay() {
 }
 
 window.onload = setup;
+
 
 
 
