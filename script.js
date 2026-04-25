@@ -56,7 +56,7 @@ function formatRuntime(time) {
   if (!time) return "Runtime: N/A";
   const hour = Math.floor(time / 60);
   const remainingMinute = time % 60;
-  return `Runtime: ${String(hour).padStart(2, "0")}:${String(remainingMinute).padStart(2, "0")}`;
+  return `Runtime: ${String(hour).padStart(2, "0")}h:${String(remainingMinute).padStart(2, "0")}min`;
 }
 
 //FILTER FUNCTIONS
@@ -126,19 +126,13 @@ function createEpisodeCard(episode) {
 //RENDER FUNCTIONS
 function renderShowList(showList) {
   const sectionEl = document.getElementById("main-section");
-  sectionEl.innerHTML = "";
-  
-  for (const show of showList) {
-    sectionEl.appendChild(createShowCard(show));
-  }
-  updateCounter(showList, state.tvShows, 'shows');
-}
-
-function renderShowList(showList) {
-  const sectionEl = document.getElementById("main-section");
   sectionEl.innerHTML = ""; // Hide episodes, show listing
+
+  const showContainer = document.createElement("div");
+  showContainer.className = "show-container";
+  sectionEl.appendChild(showContainer);
   for (const show of showList) {
-    sectionEl.appendChild(createShowCard(show));
+    showContainer.appendChild(createShowCard(show));
   }
   updateCounter(showList, state.tvShows, "shows");
 }
@@ -146,7 +140,9 @@ function renderShowList(showList) {
 function renderEpisodeList(episodeList) {
   const sectionEl = document.getElementById("main-section");
   sectionEl.innerHTML = ""; // Hide shows listing
-
+ 
+  const controls = document.createElement("div");
+  controls.className = "episode-controls";
   const navLink = document.createElement("a");
   navLink.href = "#";
   navLink.textContent = "← Back to Shows Listing";
@@ -160,7 +156,7 @@ function renderEpisodeList(episodeList) {
       searchTerm: "",
     });
   };
-  sectionEl.appendChild(navLink);
+  controls.appendChild(navLink);
 
 const episodeSelect = document.createElement("select");
 episodeSelect.id = "episode-select";
@@ -185,10 +181,14 @@ episodeSelect.addEventListener("change", (e) => {
     }
   }
 });
-sectionEl.appendChild(episodeSelect);
+controls.appendChild(episodeSelect);
+sectionEl.appendChild(controls);
 
+const episodeContainer = document.createElement("div");
+episodeContainer.className = "episode-container";
+sectionEl.appendChild(episodeContainer);
   for (const episode of episodeList) {
-    sectionEl.appendChild(createEpisodeCard(episode));
+    episodeContainer.appendChild(createEpisodeCard(episode));
   }
   updateCounter(episodeList, state.episodes, "episodes");
 }
