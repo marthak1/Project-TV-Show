@@ -86,22 +86,27 @@ function filterEpisodes(episodeList, searchTerm) {
 // COMPONENTS
 function createShowCard(show) {
   const articleEl = document.createElement("article");
-  articleEl.classList.add("show-card");
+  articleEl.classList.add("show-card-horizontal");
   articleEl.style.cursor = "pointer";
-  
+
   articleEl.innerHTML = `
+    <img src="${show.image?.medium || show.image}" alt="${show.name}">
+
     <div class="show-content">
       <h3 class="show-title">${show.name}</h3>
-      <img src="${show.image}" alt="${show.name}">
-      <p>${show.runtime}</p>
-      <p>Genres: ${show.genres.join(', ')}</p>
-      <p>Rating: ${show.rating.average || 'N/A'}</p>
-      <p>Status: ${show.status}</p>
       <p class="show-summary">${show.summary}</p>
     </div>
+
+    <div class="show-meta">
+      <p><strong>Rated:</strong> ${show.rating?.average || "N/A"}</p>
+      <p><strong>Genres:</strong> ${show.genres.join(", ")}</p>
+      <p><strong>Status:</strong> ${show.status}</p>
+      <p><strong>Runtime:</strong> ${show.runtime || "N/A"}</p>
+    </div>
   `;
-  
+
   articleEl.onclick = () => navigateToEpisodes(show.id, show.name);
+
   return articleEl;
 }
 
@@ -307,7 +312,7 @@ async function setup() {
   const preparedShowData = sortedShows.map((show) => ({
     id: show.id,
     name: show.name,
-    image: show.image?.medium || "",
+    image: show.image?.original || "",
     runtime: formatRuntime(show.runtime),
     genres: show.genres || [],
     rating: show.rating || {},
