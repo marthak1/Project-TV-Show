@@ -176,7 +176,7 @@ for (const episode of episodeList) {
 episodeSelect.addEventListener("change", (e) => {
   const episodeCode = e.target.value;
   if (episodeCode) {
-    const episodeCard = Array.from(sectionEl.children).find(
+    const episodeCard = Array.from(episodeContainer.children).find(
       (child) =>
         child.className === "episode-card" &&
         child.querySelector(".episode-code").textContent === episodeCode,
