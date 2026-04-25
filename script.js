@@ -56,7 +56,7 @@ function formatRuntime(time) {
   if (!time) return "Runtime: N/A";
   const hour = Math.floor(time / 60);
   const remainingMinute = time % 60;
-  return `Runtime: ${String(hour).padStart(2, "0")}:${String(remainingMinute).padStart(2, "0")}`;
+  return `Runtime: ${String(hour).padStart(2, "0")}h:${String(remainingMinute).padStart(2, "0")}min`;
 }
 
 //FILTER FUNCTIONS
@@ -86,22 +86,27 @@ function filterEpisodes(episodeList, searchTerm) {
 // COMPONENTS
 function createShowCard(show) {
   const articleEl = document.createElement("article");
-  articleEl.classList.add("show-card");
+  articleEl.classList.add("show-card-horizontal");
   articleEl.style.cursor = "pointer";
-  
+
   articleEl.innerHTML = `
+    <img src="${show.image?.medium || show.image}" alt="${show.name}">
+
     <div class="show-content">
       <h3 class="show-title">${show.name}</h3>
-      <img src="${show.image}" alt="${show.name}">
-      <p>${show.runtime}</p>
-      <p>Genres: ${show.genres.join(', ')}</p>
-      <p>Rating: ${show.rating.average || 'N/A'}</p>
-      <p>Status: ${show.status}</p>
       <p class="show-summary">${show.summary}</p>
     </div>
+
+    <div class="show-meta">
+      <p><strong>Rated:</strong> ${show.rating?.average || "N/A"}</p>
+      <p><strong>Genres:</strong> ${show.genres.join(", ")}</p>
+      <p><strong>Status:</strong> ${show.status}</p>
+      <p><strong>Runtime:</strong> ${show.runtime || "N/A"}</p>
+    </div>
   `;
-  
+
   articleEl.onclick = () => navigateToEpisodes(show.id, show.name);
+
   return articleEl;
 }
 
@@ -126,19 +131,13 @@ function createEpisodeCard(episode) {
 //RENDER FUNCTIONS
 function renderShowList(showList) {
   const sectionEl = document.getElementById("main-section");
-  sectionEl.innerHTML = "";
-  
-  for (const show of showList) {
-    sectionEl.appendChild(createShowCard(show));
-  }
-  updateCounter(showList, state.tvShows, 'shows');
-}
-
-function renderShowList(showList) {
-  const sectionEl = document.getElementById("main-section");
   sectionEl.innerHTML = ""; // Hide episodes, show listing
+
+  const showContainer = document.createElement("div");
+  showContainer.className = "show-container";
+  sectionEl.appendChild(showContainer);
   for (const show of showList) {
-    sectionEl.appendChild(createShowCard(show));
+    showContainer.appendChild(createShowCard(show));
   }
   updateCounter(showList, state.tvShows, "shows");
 }
@@ -146,7 +145,9 @@ function renderShowList(showList) {
 function renderEpisodeList(episodeList) {
   const sectionEl = document.getElementById("main-section");
   sectionEl.innerHTML = ""; // Hide shows listing
-
+ 
+  const controls = document.createElement("div");
+  controls.className = "episode-controls";
   const navLink = document.createElement("a");
   navLink.href = "#";
   navLink.textContent = "← Back to Shows Listing";
@@ -160,7 +161,7 @@ function renderEpisodeList(episodeList) {
       searchTerm: "",
     });
   };
-  sectionEl.appendChild(navLink);
+  controls.appendChild(navLink);
 
 const episodeSelect = document.createElement("select");
 episodeSelect.id = "episode-select";
@@ -185,10 +186,14 @@ episodeSelect.addEventListener("change", (e) => {
     }
   }
 });
-sectionEl.appendChild(episodeSelect);
+controls.appendChild(episodeSelect);
+sectionEl.appendChild(controls);
 
+const episodeContainer = document.createElement("div");
+episodeContainer.className = "episode-container";
+sectionEl.appendChild(episodeContainer);
   for (const episode of episodeList) {
-    sectionEl.appendChild(createEpisodeCard(episode));
+    episodeContainer.appendChild(createEpisodeCard(episode));
   }
   updateCounter(episodeList, state.episodes, "episodes");
 }
@@ -307,7 +312,7 @@ async function setup() {
   const preparedShowData = sortedShows.map((show) => ({
     id: show.id,
     name: show.name,
-    image: show.image?.medium || "",
+    image: show.image?.original || "",
     runtime: formatRuntime(show.runtime),
     genres: show.genres || [],
     rating: show.rating || {},
